@@ -27,8 +27,29 @@ const allDestinations = [
   { title: "Rome, Italy", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYxuBiToNWGz54-CdfJNMnl-BXf-wgrWr4UA&s" },
 ];
 
+// INSIDE INDIA – STATES
+const indianStates = [
+  "Delhi", "Maharashtra", "Uttar Pradesh", "Karnataka", "Tamil Nadu",
+  "Rajasthan", "Gujarat", "Punjab", "Haryana", "Bihar", "West Bengal",
+  "Telangana", "Kerala", "Madhya Pradesh", "Assam", "Odisha", "Goa",
+  "Uttarakhand", "Jharkhand", "Chhattisgarh"
+];
+
+// OUTSIDE INDIA – COUNTRIES
+const countries = [
+  "USA", "France", "Japan", "Australia", "UAE", "Italy", "Singapore",
+  "Canada", "Germany", "Thailand", "Maldives", "Turkey"
+];
+
 const Home: React.FC = () => {
   const [query, setQuery] = useState("");
+
+  // NEW STATES
+  const [placeType, setPlaceType] = useState("");
+  const [selectedPlace, setSelectedPlace] = useState("");
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [rooms, setRooms] = useState(1);
 
   const filtered = allDestinations.filter((place) =>
     place.title.toLowerCase().includes(query.toLowerCase())
@@ -48,7 +69,161 @@ const Home: React.FC = () => {
         color: "white",
       }}
     >
-      {/* HERO + SEARCH */}
+
+      {/* SEARCH BAR SECTION */}
+      <div>
+        <Box
+          sx={{
+            background: "rgba(255,255,255,0.9)",
+            p: 3,
+            borderRadius: 2,
+            maxWidth: 950,
+            mx: "auto",
+            mt: 4,
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
+
+          {/* WHERE TO */}
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <TextField
+              select
+              fullWidth
+              label="Where to?"
+              value={placeType}
+              onChange={(e) => setPlaceType(e.target.value)}
+              SelectProps={{ native: true }}
+              InputLabelProps={{ shrink: true }}   // ✅ FIX
+              sx={{ background: "white", borderRadius: 1 }}
+            >
+              <option value="">Select</option>
+              <option value="inside">Inside India</option>
+              <option value="outside">Outside India</option>
+            </TextField>
+
+
+            {/* STATES / COUNTRIES */}
+            <TextField
+              select
+              fullWidth
+              label={placeType === "inside" ? "Select State" : "Select Country"}
+              value={selectedPlace}
+              onChange={(e) => setSelectedPlace(e.target.value)}
+              disabled={!placeType}
+              SelectProps={{ native: true }}
+              sx={{ background: "white", borderRadius: 1 }}
+            >
+              <option value="">Select</option>
+              {(placeType === "inside" ? indianStates : countries).map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </TextField>
+          </Box>
+
+          {/* DATES */}
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <TextField
+              fullWidth
+              type="date"
+              label="Check-in"
+              InputLabelProps={{ shrink: true }}
+              sx={{ background: "white", borderRadius: 1 }}
+            />
+            <TextField
+              fullWidth
+              type="date"
+              label="Check-out"
+              InputLabelProps={{ shrink: true }}
+              sx={{ background: "white", borderRadius: 1 }}
+            />
+          </Box>
+
+          {/* ADULTS / CHILDREN / ROOMS */}
+          <Box sx={{ display: "flex", gap: 2 }}>
+
+            {/* Adults */}
+            <Box
+
+              sx={{
+                background: "white",
+                p: 1.5,
+                borderRadius: 1,
+                flexGrow: 1,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span className=" text-black px-1">Adults</span>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <button className=" text-black" onClick={() => setAdults(Math.max(1, adults - 1))}>-</button>
+                <span className=" text-black">{adults}</span>
+                <button className=" text-black" onClick={() => setAdults(adults + 1)}>+</button>
+              </Box>
+            </Box>
+
+            {/* Children */}
+            <Box
+              sx={{
+                background: "white",
+                p: 1.5,
+                borderRadius: 1,
+                flexGrow: 1,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <span className=" text-black px-1">Children</span>
+              <Box sx={{ display: "flex", gap: 1 }}>
+                <button className=" text-black" onClick={() => setChildren(Math.max(0, children - 1))}>-</button>
+                <span className=" text-black">{children}</span>
+                <button className=" text-black" onClick={() => setChildren(children + 1)}>+</button>
+              </Box>
+            </Box>
+
+            {/* Rooms */}
+            <TextField
+              select
+              fullWidth
+              label="Rooms"
+              value={rooms}
+              onChange={(e) => setRooms(Number(e.target.value))}
+              SelectProps={{ native: true }}
+              sx={{ background: "white", borderRadius: 1 }}
+            >
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </TextField>
+          </Box>
+
+          {/* SEARCH BUTTON */}
+          <Box
+            component="button"
+            sx={{
+              px: 3,
+              py: 1.5,
+              background: "#1976d2",
+              color: "white",
+              borderRadius: 1,
+              border: "none",
+              cursor: "pointer",
+              fontWeight: "bold",
+              ":hover": { background: "#125bab" },
+              width: "200px",
+              alignSelf: "center",
+            }}
+          >
+            Search
+          </Box>
+
+        </Box>
+      </div>
+
+      {/* HERO */}
       <Box textAlign="center" mt={4}>
         <Typography variant="h3" fontWeight="bold">
           Explore The World With Us
@@ -108,7 +283,7 @@ const Home: React.FC = () => {
                     backgroundColor: "rgba(255,255,255,0.85)",
                   }}
                 >
-                  <CardMedia component="img" height="200" className="h-50 w-50" image={place.img} />
+                  <CardMedia component="img" height="200" image={place.img} />
                   <CardContent>
                     <Typography variant="h6" fontWeight="bold">
                       {place.title}
