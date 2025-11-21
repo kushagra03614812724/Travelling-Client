@@ -338,11 +338,11 @@ const Home: React.FC = () => {
   };
 
   // readable label for room quality
-  const roomQualityLabel = (key: string) => {
-    if (key === "basic") return `Basic — ₹${roomCostByQuality.basic}/room/night`;
-    if (key === "mid") return `Mid — ₹${roomCostByQuality.mid}/room/night`;
-    return `Premium — ₹${roomCostByQuality.premium}/room/night`;
-  };
+  // const roomQualityLabel = (key: string) => {
+  //   if (key === "basic") return `Basic — ₹${roomCostByQuality.basic}/room/night`;
+  //   if (key === "mid") return `Mid — ₹${roomCostByQuality.mid}/room/night`;
+  //   return `Premium — ₹${roomCostByQuality.premium}/room/night`;
+  // };
 
   return (
     <Box
