@@ -29,6 +29,12 @@ const allDestinations = [
   { title: "Santorini, Greece", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQPjvNoo8n9dK7p3tJVLNi3CStxV7JZ9Yv8UA&s" },
   { title: "Sydney, Australia", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsRIq_aHMWP8bOKTu3Qh6Juy0JLBbcFGFhMA&s" },
   { title: "Rome, Italy", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYxuBiToNWGz54-CdfJNMnl-BXf-wgrWr4UA&s" },
+  { title: "Bangkok, Thailand", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRb0YLYhx6XJAbz6RlpboiF4ozUKr4e4W6LMQ&s" },
+  { title: "Dubai, UAE", img: "https://t1.gstatic.com/licensed-image?q=tbn:ANd9GcR8Bhqsf-tXD0IKR8NqyqdZCoKBkSgKrfJIa8sqvIAYwDI2TO-8HfyFkWFnfH0F4kCv" },
+  { title: "London, UK", img: "https://www.visitlondon.com/-/media/images/london/visit/things-to-do/nightlife/tower-bridge-at-night1920x1080.png?mw=800&rev=743f319d95bf47638fe287a5322c115c&hash=4EE2C2E9D2540601359FE846DC4B55C0" },
+  { title: "Vancouver, Canada", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWuhrqImkfc1wTuDCkaLGsH9S5HWntGJJnFw&s" },
+  { title: " Munich ,Germany", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGKR5dC25j2RGbE721PUZ_wOuEsAGlRjc4yw&s" },
+  { title: " Jurong ,Singapore ", img: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Chinese_Gardens_%288058580441%29.jpg/1200px-Chinese_Gardens_%288058580441%29.jpg" },
 ];
 
 /* ================= INDIA STATES — EXACTLY 3 CITIES ================= */
@@ -41,7 +47,7 @@ const indianStates = [
   { state: "Goa", cities: ["Panaji", "Margao", "Vasco da Gama"] },
   { state: "Gujarat", cities: ["Gandhinagar", "Ahmedabad", "Surat"] },
   { state: "Haryana", cities: ["Chandigarh", "Gurugram", "Faridabad"] },
-  { state: "Himachal Pradesh", cities: ["Shimla", "Manali", "Dharamshala"] },
+  { state: "Himachal Pradesh", cities: ["Shimla", "Manali", "Mussoorie"] },
   { state: "Jharkhand", cities: ["Ranchi", "Jamshedpur", "Dhanbad"] },
   { state: "Karnataka", cities: ["Bengaluru", "Mysuru", "Mangaluru"] },
   { state: "Kerala", cities: ["Thiruvananthapuram", "Kochi", "Kozhikode"] },
@@ -64,7 +70,7 @@ const indianStates = [
 ];
 
 /* ================= COUNTRIES ================= */
-const countries = ["USA", "UAE", "France", "Japan", "Germany", "Thailand"];
+const countries = ["USA", "UAE", "France", "Japan", "Germany", "Greece", "Thailand", "Indonesia", "Australia", "Italy", "Canada", "Singapore", "UK", "USA"];
 
 /* ================= MAJOR AIRPORT CITIES ================= */
 const airportCities = [
@@ -86,6 +92,23 @@ const airportCities = [
   "Visakhapatnam", "Vijayawada"
 ];
 
+const intlKm: Record<string, number> = {
+  USA: 13000,
+  France: 7000,
+  Japan: 6000,
+  Germany: 6500,
+  Greece: 5500,
+  Thailand: 3000,
+  Indonesia: 3500,
+  Australia: 10000,
+  Italy: 7000,
+  Canada: 12000,
+  Singapore: 4100,
+  UK: 7000,
+  UAE: 2500,
+};
+
+
 /* ================= COMBINED OPTIONS ================= */
 const combinedInsideOptions = indianStates.flatMap((s) =>
   s.cities.map((city) => ({
@@ -100,6 +123,8 @@ const combinedOutsideOptions = countries.map((c) => ({
   label: c,
   city: c,
 }));
+
+
 
 /* ================= SMALL MUI STYLE ================= */
 const smallStyle = {
@@ -134,26 +159,40 @@ const estimateDistance = (fromValue: string, toValue: string): number | null => 
   const fromIsCountry = fromValue.startsWith("country-");
   const toIsCountry = toValue.startsWith("country-");
 
+  // --------------------------
+  // CASE 1: Both inside India
+  // --------------------------
   if (!fromIsCountry && !toIsCountry) {
-    // both inside India
     const fromState = fromValue.split("-")[0];
     const toState = toValue.split("-")[0];
     const fromCity = fromValue.split("-")[1] ?? "";
     const toCity = toValue.split("-")[1] ?? "";
 
     if (fromState === toState) return 100; // within same state
+
     const bothAirport = airportCities.includes(fromCity) && airportCities.includes(toCity);
     return bothAirport ? 1200 : 800;
   }
 
+  // --------------------------
+  // CASE 2: Both are countries
+  // --------------------------
   if (fromIsCountry && toIsCountry) {
     const f = fromValue.replace("country-", "");
     const t = toValue.replace("country-", "");
-    return f === t ? 800 : 8000;
+
+    if (f === t) return 800; // same country
+    return 9000; // country-to-country long-haul
   }
 
-  // one inside, one outside
-  return 4000;
+  // --------------------------
+  // CASE 3: One inside India, one outside
+  // --------------------------
+  const country = fromIsCountry
+    ? fromValue.replace("country-", "")
+    : toValue.replace("country-", "");
+
+  return intlKm[country] ?? 5000; // fallback
 };
 
 /* ================= CALCULATE PRICE ================= */
@@ -269,6 +308,14 @@ const Home: React.FC = () => {
   const [priceResult, setPriceResult] = useState<PriceBreakdown | null>(null);
   const [showDetails, setShowDetails] = useState<boolean>(false);
 
+  const [search, setSearch] = useState("");
+
+  // FILTERED DATA
+  const filteredDestinations = allDestinations.filter(d =>
+    d.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+
   // helper: extract city string from combined option
   const extractCity = (value: string): string => {
     if (!value) return "";
@@ -291,10 +338,10 @@ const Home: React.FC = () => {
   const transportOptions = isInternational
     ? [{ value: "flight", label: "Flight" }]
     : [
-        { value: "bus", label: "Bus" },
-        { value: "train", label: "Train" },
-        { value: "flight", label: "Flight" },
-      ];
+      { value: "bus", label: "Bus" },
+      { value: "train", label: "Train" },
+      { value: "flight", label: "Flight" },
+    ];
 
   const calcNights = (inDate: string, outDate: string): number => {
     if (!inDate || !outDate) return 1;
@@ -470,155 +517,155 @@ const Home: React.FC = () => {
           sx={smallStyle}
         />
 
-      <Box
-  sx={{
-    background: "white",
-    color: "black",
-    borderRadius: 1,
-    px: 2,
-    py: 1.5,
+        <Box
+          sx={{
+            background: "white",
+            color: "black",
+            borderRadius: 1,
+            px: 2,
+            py: 1.5,
 
-    display: "grid",
-    gridTemplateColumns: {
-      xs: "1fr 1fr",   // 2 columns on mobile
-      sm: "repeat(3, 1fr)", // 3 columns on tablets/desktops
-    },
-    gap: 2,
-    width: "100%",
-  }}
->
-  {/* Adults */}
-  <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 0.5,
-      alignItems: "center",
-    }}
-  >
-    <Typography sx={{ fontSize: 13 }}>Adults</Typography>
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr 1fr",   // 2 columns on mobile
+              sm: "repeat(3, 1fr)", // 3 columns on tablets/desktops
+            },
+            gap: 2,
+            width: "100%",
+          }}
+        >
+          {/* Adults */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+              alignItems: "center",
+            }}
+          >
+            <Typography sx={{ fontSize: 13 }}>Adults</Typography>
 
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <button
-        onClick={() => setAdults(Math.max(1, adults - 1))}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 4,
-          border: "1px solid #ccc",
-          background: "white",
-          cursor: "pointer",
-        }}
-      >
-        -
-      </button>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <button
+                onClick={() => setAdults(Math.max(1, adults - 1))}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                  background: "white",
+                  cursor: "pointer",
+                }}
+              >
+                -
+              </button>
 
-      <Typography sx={{ width: 24, textAlign: "center" }}>{adults}</Typography>
+              <Typography sx={{ width: 24, textAlign: "center" }}>{adults}</Typography>
 
-      <button
-        onClick={() => setAdults(adults + 1)}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 4,
-          border: "1px solid #ccc",
-          background: "white",
-          cursor: "pointer",
-        }}
-      >
-        +
-      </button>
-    </Box>
-  </Box>
+              <button
+                onClick={() => setAdults(adults + 1)}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                  background: "white",
+                  cursor: "pointer",
+                }}
+              >
+                +
+              </button>
+            </Box>
+          </Box>
 
-  {/* Children */}
-  <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 0.5,
-      alignItems: "center",
-    }}
-  >
-    <Typography sx={{ fontSize: 13 }}>Children</Typography>
+          {/* Children */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+              alignItems: "center",
+            }}
+          >
+            <Typography sx={{ fontSize: 13 }}>Children</Typography>
 
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <button
-        onClick={() => setChildren(Math.max(0, children - 1))}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 4,
-          border: "1px solid #ccc",
-          background: "white",
-          cursor: "pointer",
-        }}
-      >
-        -
-      </button>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <button
+                onClick={() => setChildren(Math.max(0, children - 1))}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                  background: "white",
+                  cursor: "pointer",
+                }}
+              >
+                -
+              </button>
 
-      <Typography sx={{ width: 24, textAlign: "center" }}>{children}</Typography>
+              <Typography sx={{ width: 24, textAlign: "center" }}>{children}</Typography>
 
-      <button
-        onClick={() => setChildren(children + 1)}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 4,
-          border: "1px solid #ccc",
-          background: "white",
-          cursor: "pointer",
-        }}
-      >
-        +
-      </button>
-    </Box>
-  </Box>
+              <button
+                onClick={() => setChildren(children + 1)}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                  background: "white",
+                  cursor: "pointer",
+                }}
+              >
+                +
+              </button>
+            </Box>
+          </Box>
 
-  {/* Rooms */}
-  <Box
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      gap: 0.5,
-      alignItems: "center",
-    }}
-  >
-    <Typography sx={{ fontSize: 13 }}>Rooms</Typography>
+          {/* Rooms */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 0.5,
+              alignItems: "center",
+            }}
+          >
+            <Typography sx={{ fontSize: 13 }}>Rooms</Typography>
 
-    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-      <button
-        onClick={() => setRooms(Math.max(1, rooms - 1))}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 4,
-          border: "1px solid #ccc",
-          background: "white",
-          cursor: "pointer",
-        }}
-      >
-        -
-      </button>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <button
+                onClick={() => setRooms(Math.max(1, rooms - 1))}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                  background: "white",
+                  cursor: "pointer",
+                }}
+              >
+                -
+              </button>
 
-      <Typography sx={{ width: 24, textAlign: "center" }}>{rooms}</Typography>
+              <Typography sx={{ width: 24, textAlign: "center" }}>{rooms}</Typography>
 
-      <button
-        onClick={() => setRooms(Math.min(6, rooms + 1))}
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 4,
-          border: "1px solid #ccc",
-          background: "white",
-          cursor: "pointer",
-        }}
-      >
-        +
-      </button>
-    </Box>
-  </Box>
-</Box>
+              <button
+                onClick={() => setRooms(Math.min(6, rooms + 1))}
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 4,
+                  border: "1px solid #ccc",
+                  background: "white",
+                  cursor: "pointer",
+                }}
+              >
+                +
+              </button>
+            </Box>
+          </Box>
+        </Box>
 
 
         {/* ROOM QUALITY (small dropdown) */}
@@ -707,7 +754,6 @@ const Home: React.FC = () => {
         )}
       </Box>
 
-      {/* HERO */}
       <Box textAlign="center" mt={4}>
         <Typography variant="h3" fontWeight="bold">
           Explore The World With Us
@@ -715,6 +761,17 @@ const Home: React.FC = () => {
         <Typography mt={1} fontSize={18}>
           Find your next destination & best deals
         </Typography>
+
+        {/* SEARCH BOX */}
+        <Box mt={3}>
+          <TextField
+            placeholder="Search destination..."
+            variant="outlined"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ width: "60%", background: "#fff", borderRadius: 1 }}
+          />
+        </Box>
       </Box>
 
       {/* SWIPER */}
@@ -732,25 +789,33 @@ const Home: React.FC = () => {
             900: { slidesPerView: 3 },
           }}
         >
-          {allDestinations.map((place, idx) => (
-            <SwiperSlide key={idx}>
-              <Card
-                sx={{
-                  borderRadius: 2,
-                  overflow: "hidden",
-                  backgroundColor: "rgba(255,255,255,0.9)",
-                }}
-              >
-                <CardMedia component="img" height="200" className="h-50 w-50" image={place.img} />
-                <CardContent>
-                  <Typography variant="h6" fontWeight="bold">
-                    {place.title}
-                  </Typography>
-                  <Typography variant="body2">Discover amazing experiences.</Typography>
-                </CardContent>
-              </Card>
-            </SwiperSlide>
-          ))}
+          {filteredDestinations.length > 0 ? (
+            filteredDestinations.map((place, idx) => (
+              <SwiperSlide key={idx}>
+                <Card
+                  sx={{
+                    borderRadius: 2,
+                    overflow: "hidden",
+                    backgroundColor: "rgba(255,255,255,0.9)",
+                  }}
+                >
+                  <CardMedia component="img" height="200" className="h-50 w-50" image={place.img} />
+                  <CardContent>
+                    <Typography variant="h6" fontWeight="bold">
+                      {place.title}
+                    </Typography>
+                    <Typography variant="body2">
+                      Discover amazing experiences.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </SwiperSlide>
+            ))
+          ) : (
+            <Box textAlign="center" py={5}>
+              <Typography variant="h6">No destinations found</Typography>
+            </Box>
+          )}
         </Swiper>
       </Container>
     </Box>
