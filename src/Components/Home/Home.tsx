@@ -470,116 +470,156 @@ const Home: React.FC = () => {
           sx={smallStyle}
         />
 
-        {/* GUESTS */}
-        <Box 
-          sx={{
-            display: "flex",
-            gap: 2,
-            alignItems: "center",
-            background: "white",
-            color :"black" ,
-            borderRadius: 1,
-            px: 2,
-            py: 1,
-            minWidth: 320,
-          }}
-        >
-          {/* Adults */}
-          <Box  sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography  sx={{ fontSize: 13, width: 60 }}>Adults</Typography>
-            <button 
-              onClick={() => setAdults(Math.max(1, adults - 1))}
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 4,
-                border: "1px solid #ccc",
-                background: "white",
-                cursor: "pointer",
-              }}
-            >
-              -
-            </button>
-            <Typography sx={{ width: 24, textAlign: "center" }}>{adults}</Typography>
-            <button
-              onClick={() => setAdults(adults + 1)}
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 4,
-                border: "1px solid #ccc",
-                background: "white",
-                cursor: "pointer",
-              }}
-            >
-              +
-            </button>
-          </Box>
+      <Box
+  sx={{
+    background: "white",
+    color: "black",
+    borderRadius: 1,
+    px: 2,
+    py: 1.5,
 
-          {/* Children */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography sx={{ fontSize: 13, width: 60 }}>Children</Typography>
-            <button
-              onClick={() => setChildren(Math.max(0, children - 1))}
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 4,
-                border: "1px solid #ccc",
-                background: "white",
-                cursor: "pointer",
-              }}
-            >
-              -
-            </button>
-            <Typography sx={{ width: 24, textAlign: "center" }}>{children}</Typography>
-            <button
-              onClick={() => setChildren(children + 1)}
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 4,
-                border: "1px solid #ccc",
-                background: "white",
-                cursor: "pointer",
-              }}
-            >
-              +
-            </button>
-          </Box>
+    display: "grid",
+    gridTemplateColumns: {
+      xs: "1fr 1fr",   // 2 columns on mobile
+      sm: "repeat(3, 1fr)", // 3 columns on tablets/desktops
+    },
+    gap: 2,
+    width: "100%",
+  }}
+>
+  {/* Adults */}
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 0.5,
+      alignItems: "center",
+    }}
+  >
+    <Typography sx={{ fontSize: 13 }}>Adults</Typography>
 
-          {/* Rooms */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography sx={{ fontSize: 13, width: 50 }}>Rooms</Typography>
-            <button
-              onClick={() => setRooms(Math.max(1, rooms - 1))}
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 4,
-                border: "1px solid #ccc",
-                background: "white",
-                cursor: "pointer",
-              }}
-            >
-              -
-            </button>
-            <Typography sx={{ width: 24, textAlign: "center" }}>{rooms}</Typography>
-            <button
-              onClick={() => setRooms(Math.min(6, rooms + 1))}
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 4,
-                border: "1px solid #ccc",
-                background: "white",
-                cursor: "pointer",
-              }}
-            >
-              +
-            </button>
-          </Box>
-        </Box>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <button
+        onClick={() => setAdults(Math.max(1, adults - 1))}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 4,
+          border: "1px solid #ccc",
+          background: "white",
+          cursor: "pointer",
+        }}
+      >
+        -
+      </button>
+
+      <Typography sx={{ width: 24, textAlign: "center" }}>{adults}</Typography>
+
+      <button
+        onClick={() => setAdults(adults + 1)}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 4,
+          border: "1px solid #ccc",
+          background: "white",
+          cursor: "pointer",
+        }}
+      >
+        +
+      </button>
+    </Box>
+  </Box>
+
+  {/* Children */}
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 0.5,
+      alignItems: "center",
+    }}
+  >
+    <Typography sx={{ fontSize: 13 }}>Children</Typography>
+
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <button
+        onClick={() => setChildren(Math.max(0, children - 1))}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 4,
+          border: "1px solid #ccc",
+          background: "white",
+          cursor: "pointer",
+        }}
+      >
+        -
+      </button>
+
+      <Typography sx={{ width: 24, textAlign: "center" }}>{children}</Typography>
+
+      <button
+        onClick={() => setChildren(children + 1)}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 4,
+          border: "1px solid #ccc",
+          background: "white",
+          cursor: "pointer",
+        }}
+      >
+        +
+      </button>
+    </Box>
+  </Box>
+
+  {/* Rooms */}
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      gap: 0.5,
+      alignItems: "center",
+    }}
+  >
+    <Typography sx={{ fontSize: 13 }}>Rooms</Typography>
+
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <button
+        onClick={() => setRooms(Math.max(1, rooms - 1))}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 4,
+          border: "1px solid #ccc",
+          background: "white",
+          cursor: "pointer",
+        }}
+      >
+        -
+      </button>
+
+      <Typography sx={{ width: 24, textAlign: "center" }}>{rooms}</Typography>
+
+      <button
+        onClick={() => setRooms(Math.min(6, rooms + 1))}
+        style={{
+          width: 28,
+          height: 28,
+          borderRadius: 4,
+          border: "1px solid #ccc",
+          background: "white",
+          cursor: "pointer",
+        }}
+      >
+        +
+      </button>
+    </Box>
+  </Box>
+</Box>
+
 
         {/* ROOM QUALITY (small dropdown) */}
         <TextField
@@ -701,7 +741,7 @@ const Home: React.FC = () => {
                   backgroundColor: "rgba(255,255,255,0.9)",
                 }}
               >
-                <CardMedia component="img" height="200" image={place.img} />
+                <CardMedia component="img" height="200" className="h-50 w-50" image={place.img} />
                 <CardContent>
                   <Typography variant="h6" fontWeight="bold">
                     {place.title}
